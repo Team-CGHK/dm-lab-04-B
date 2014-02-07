@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace SiscreteMathLab4_B
 {
@@ -12,31 +15,32 @@ namespace SiscreteMathLab4_B
         static void Main(string[] args)
         {
             int n = int.Parse(sr.ReadLine());
-            List<int> set = new List<int>();
-            for (int i = 1; i <= n; i++)
-                set.Add(i);
-            GenerateObj(new List<int>(), set);
+            int[] set = new int[n];
+            for (int i = 0; i < n; i++)
+                set[i] = i+1;
+            GenerateObj(new List<int>(), set, new bool[set.Length]);
             sw.Close();
         }
 
 
-        static void GenerateObj(List<int> obj, List<int> set)
+        static void GenerateObj(List<int> obj, int[] set, bool[] used)
         {
-            if (set.Count == 0)
+            if (used.All(x => x))
             {
                 foreach (int t in obj)
                     sw.Write(t + " ");
                 sw.WriteLine();
             }
             else
-                for (int i = 0; i < set.Count; i++)
-                {
-                    obj.Add(set[0]);
-                    set.RemoveAt(0);   
-                    GenerateObj(obj, set);
-                    set.Add(obj[obj.Count-1]);
-                    obj.RemoveAt(obj.Count-1);
-                }
+                for (int i = 0; i < set.Length; i++)
+                    if (!used[i])
+                    {
+                        obj.Add(set[i]);
+                        used[i] = true;
+                        GenerateObj(obj, set, used);
+                        used[i] = false;
+                        obj.RemoveAt(obj.Count - 1);
+                    }
         }
     }
 }
